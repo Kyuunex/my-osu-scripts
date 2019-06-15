@@ -44,10 +44,10 @@ for mapset_folder in list_of_all_mapsets:
             for one_file in list_of_files_in_current_mapset:
                 if (not one_file == ".") or (not one_file == ".."):
                     if one_file.lower().endswith(".osu"):
-                        background_filename = (get_background(mapset_folder_full_path + one_file)).replace('\\', '/')
+                        background_filename = get_background(mapset_folder_full_path + one_file)
                         if background_filename:
-                            background_full_path = mapset_folder_full_path + background_filename
-                            target_full_path = target_directory_mapset + background_filename
+                            background_full_path = mapset_folder_full_path + background_filename.replace('\\', '/')
+                            target_full_path = target_directory_mapset + background_filename.replace('\\', '/')
 
                             target_full_path_folder_list = (target_full_path.split("/"))
                             del target_full_path_folder_list[-1]
