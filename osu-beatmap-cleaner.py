@@ -12,8 +12,8 @@ def get_background(file_path):
         if os.path.isfile(file_path):
             with open(file_path) as g:
                 data = g.read()
-                buffer = data.replace(" ", "_")
-            config = configparser.ConfigParser(comment_prefixes=("//", "osu", "\ufeffosu", "_"), allow_no_value=True, strict=False)
+                buffer = (data.replace(" ", "_")).strip("\ufeff")
+            config = configparser.ConfigParser(comment_prefixes=("//", "osu", "_"), allow_no_value=True, strict=False)
             config.read_string(buffer)
 
             for event in config['Events']:
