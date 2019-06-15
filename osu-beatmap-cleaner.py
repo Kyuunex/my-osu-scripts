@@ -44,7 +44,7 @@ for mapset_folder in list_of_all_mapsets:
             for one_file in list_of_files_in_current_mapset:
                 if (not one_file == ".") or (not one_file == ".."):
                     if one_file.lower().endswith(".osu"):
-                        background_filename = get_background(mapset_folder_full_path + one_file)
+                        background_filename = (get_background(mapset_folder_full_path + one_file)).replace('\\', '/')
                         if background_filename:
                             background_full_path = mapset_folder_full_path + background_filename
                             target_full_path = target_directory_mapset + background_filename
@@ -57,10 +57,18 @@ for mapset_folder in list_of_all_mapsets:
                                 os.makedirs(target_full_path_folder)
                             if not os.path.isfile(target_full_path_folder):
                                 if os.path.isfile(background_full_path):
-                                    shutil.move(background_full_path, target_full_path)#
+                                    try:
+                                        shutil.move(background_full_path, target_full_path)#
+                                    except Exception as e:
+                                        print("Errored: " + background_full_path + "\n")
+                                        print(e)
                                     #print("Moved: " + background_full_path + "\n")
                     if one_file.lower().endswith(('.osu', '.mp3', '.ogg')):
-                        shutil.move(mapset_folder_full_path + one_file, target_directory_mapset + one_file)#
+                        try:
+                            shutil.move(mapset_folder_full_path + one_file, target_directory_mapset + one_file)#
+                        except Exception as e:
+                            print("Errored: " + mapset_folder_full_path + one_file + "\n")
+                            print(e)
                         #print("Moved: " + mapset_folder_full_path + one_file + "\n")
 
 
