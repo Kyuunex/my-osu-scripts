@@ -5,7 +5,6 @@ input_file = open("input.txt", "r+")
 output_file = open("output.txt", "w")
 
 timing_points = input_file.readlines()
-line_amount = len(timing_points)
 
 base_bpm = 0
 
