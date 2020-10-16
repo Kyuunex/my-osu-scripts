@@ -9,7 +9,7 @@ class Beatmap:
 
         # sections
         self.osu_file_format_version = 0
-        self.general_section = []
+        self.general_section = {}
         self.editor_section = []
         self.metadata_section = []
         self.difficulty_section = {}
@@ -23,7 +23,7 @@ class Beatmap:
 
         for line in self.file.readlines():
             if "osu file format v" in line:
-                self.osu_file_format_version = int(line.replace("osu file format v", "").strip())
+                self.osu_file_format_version = int(line.replace("osu file format v", "").replace("\ufeff", "").strip())
                 continue
             elif "[General]" in line:
                 current_section = "[General]"
@@ -55,7 +55,12 @@ class Beatmap:
             line = line.strip()
 
             if current_section == "[General]":
-                self.general_section.append(line)
+                try:
+                    general_stuff = line.split(": ")
+                    self.general_section[general_stuff[0]] = general_stuff[1]
+                except IndexError:
+                    general_stuff = line.split(":")
+                    self.general_section[general_stuff[0]] = general_stuff[1]
             elif current_section == "[Editor]":
                 self.editor_section.append(line)
             elif current_section == "[Metadata]":
@@ -79,8 +84,8 @@ class Beatmap:
 
         output_buffer += "[General]"
         output_buffer += "\n"
-        for general_line in self.general_section:
-            output_buffer += general_line
+        for general_line in self.general_section.items():
+            output_buffer += ": ".join(general_line)
             output_buffer += "\n"
         output_buffer += "\n"
 
@@ -185,6 +190,10 @@ def convert_diff_settings(difficulty_section):
     return new_difficulty_settings
 
 
+def fix_nonexistant_drum_sample(beatmap):
+    beatmap.general_section["SampleSet"] = "None"
+
+
 def fix_max_sv(beatmap):
     timing_points = []
     slider_multiplier = float(beatmap.difficulty_section['SliderMultiplier'])
@@ -211,6 +220,7 @@ def convert(file_to_convert):
         a.timing_points_section = convert_timing_points(a.timing_points_section)
         a.difficulty_section = convert_diff_settings(a.difficulty_section)
         fix_max_sv(a)
+        fix_nonexistant_drum_sample(a)
         a.osu_file_format_version = 5
         a.save_file()
         print("saved " + file_to_convert)
@@ -219,10 +229,6 @@ def convert(file_to_convert):
 
 
 if not sys.argv:
-    for file in os.listdir(os.getcwd()):
-        if file.endswith(".osu"):
-            convert(os.getcwd()+"/"+file)
-elif "EVERYTHING" in sys.argv:
     for beatmap_folder in os.listdir(os.getcwd()):
         if beatmap_folder == ".":
             continue
@@ -232,6 +238,10 @@ elif "EVERYTHING" in sys.argv:
         for file in os.listdir(os.getcwd()+"/"+beatmap_folder):
             if file.endswith(".osu"):
                 convert(os.getcwd()+"/"+beatmap_folder+"/"+file)
+elif "MAPSET" in sys.argv:
+    for file in os.listdir(os.getcwd()):
+        if file.endswith(".osu"):
+            convert(os.getcwd()+"/"+file)
 else:
     convert(" ".join(sys.argv))
 
