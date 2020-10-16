@@ -38,10 +38,18 @@ class Beatmap:
         for difficulty_line in self.difficulty_section.items():
             diff_setting = difficulty_line[0]
 
-            if diff_setting == "ApproachRate":
-                diff_setting = "OverallDifficulty"
-
-            new_difficulty_settings[diff_setting] = str(int(float(difficulty_line[1])))
+            if diff_setting == "OverallDifficulty":
+                continue
+            elif diff_setting == "ApproachRate":
+                new_difficulty_settings["OverallDifficulty"] = str(int(float(difficulty_line[1])))
+            elif diff_setting == "HPDrainRate":
+                new_difficulty_settings["HPDrainRate"] = str(int(float(difficulty_line[1])))
+            elif diff_setting == "CircleSize":
+                new_difficulty_settings["CircleSize"] = str(int(float(difficulty_line[1])))
+            elif diff_setting == "SliderMultiplier":
+                new_difficulty_settings["SliderMultiplier"] = str(float(difficulty_line[1]))
+            elif diff_setting == "SliderTickRate":
+                new_difficulty_settings["SliderTickRate"] = str(int(float(difficulty_line[1])))
 
         self.difficulty_section = new_difficulty_settings
 
@@ -120,14 +128,12 @@ class Beatmap:
             output_file.write(general_line)
             output_file.write("\n")
         output_file.write("\n")
-        output_file.write("\n")
 
         output_file.write("[Editor]")
         output_file.write("\n")
         for editor_line in self.editor_section:
             output_file.write(editor_line)
             output_file.write("\n")
-        output_file.write("\n")
         output_file.write("\n")
 
         output_file.write("[Metadata]")
@@ -136,14 +142,12 @@ class Beatmap:
             output_file.write(metadata_line)
             output_file.write("\n")
         output_file.write("\n")
-        output_file.write("\n")
 
         output_file.write("[Difficulty]")
         output_file.write("\n")
         for difficulty_line in self.difficulty_section.items():
             output_file.write(":".join(difficulty_line))
             output_file.write("\n")
-        output_file.write("\n")
         output_file.write("\n")
 
         output_file.write("[Events]")
@@ -152,14 +156,12 @@ class Beatmap:
             output_file.write(event_line)
             output_file.write("\n")
         output_file.write("\n")
-        output_file.write("\n")
 
         output_file.write("[TimingPoints]")
         output_file.write("\n")
         for timing_point_line in self.timing_points_section:
             output_file.write(",".join(timing_point_line))
             output_file.write("\n")
-        output_file.write("\n")
         output_file.write("\n")
 
         output_file.write("[Colours]")
@@ -168,14 +170,12 @@ class Beatmap:
             output_file.write(colours_line)
             output_file.write("\n")
         output_file.write("\n")
-        output_file.write("\n")
 
         output_file.write("[HitObjects]")
         output_file.write("\n")
         for hitobjects_line in self.hitobjects_section:
             output_file.write(hitobjects_line)
             output_file.write("\n")
-        output_file.write("\n")
         output_file.write("\n")
 
         output_file.close()
