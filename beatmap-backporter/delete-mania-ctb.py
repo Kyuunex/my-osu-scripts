@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import shutil
 import sys
 
 
@@ -102,6 +103,11 @@ if sys.argv:
         if beatmap_folder == "..":
             continue
 
-        for file in os.listdir(" ".join(sys.argv) + "/" + beatmap_folder):
+        beatmap_files = os.listdir(" ".join(sys.argv) + "/" + beatmap_folder)
+        for file in beatmap_files:
             if file.endswith(".osu"):
                 convert(" ".join(sys.argv) + "/" + beatmap_folder + "/" + file)
+
+        if not ".osu" in "_".join(beatmap_files):
+            shutil.rmtree(" ".join(sys.argv) + "/" + beatmap_folder)
+            print(f"osu not in {beatmap_folder}")
