@@ -39,7 +39,7 @@ class Beatmap:
             diff_setting = difficulty_line[0]
 
             if diff_setting == "OverallDifficulty":
-                continue
+                new_difficulty_settings["OverallDifficulty"] = str(int(float(difficulty_line[1])))
             elif diff_setting == "ApproachRate":
                 new_difficulty_settings["OverallDifficulty"] = str(int(float(difficulty_line[1])))
             elif diff_setting == "HPDrainRate":
