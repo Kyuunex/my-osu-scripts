@@ -242,19 +242,20 @@ def convert(file_to_convert):
         print("skipped because already compatible")
 
 
-if not sys.argv:
-    for beatmap_folder in os.listdir(os.getcwd()):
-        if beatmap_folder == ".":
-            continue
-        if beatmap_folder == "..":
-            continue
+if __name__ == '__main__':
+    if not sys.argv:
+        for beatmap_folder in os.listdir(os.getcwd()):
+            if beatmap_folder == ".":
+                continue
+            if beatmap_folder == "..":
+                continue
 
-        for file in os.listdir(os.getcwd() + "/" + beatmap_folder):
+            for file in os.listdir(os.getcwd() + "/" + beatmap_folder):
+                if file.endswith(".osu"):
+                    convert(os.getcwd() + "/" + beatmap_folder + "/" + file)
+    elif "MAPSET" in sys.argv:
+        for file in os.listdir(os.getcwd()):
             if file.endswith(".osu"):
-                convert(os.getcwd() + "/" + beatmap_folder + "/" + file)
-elif "MAPSET" in sys.argv:
-    for file in os.listdir(os.getcwd()):
-        if file.endswith(".osu"):
-            convert(os.getcwd() + "/" + file)
-else:
-    convert(" ".join(sys.argv))
+                convert(os.getcwd() + "/" + file)
+    else:
+        convert(" ".join(sys.argv))
