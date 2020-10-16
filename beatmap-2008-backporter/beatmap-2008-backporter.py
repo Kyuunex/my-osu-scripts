@@ -195,9 +195,10 @@ def fix_max_sv(beatmap):
         for current_timing_point in beatmap.timing_points_section:
             time, beat_length, meter, sample_set, sample_index, volume, uninherited, effects = current_timing_point
 
-            timing_points.append([time, str(float(beat_length) / 2), meter, sample_set, sample_index, volume, uninherited, effects])
+            timing_points.append([time, str(float(beat_length) / 2), meter, sample_set,
+                                  sample_index, volume, uninherited, effects])
 
-    beatmap.timing_points_section = timing_points
+        beatmap.timing_points_section = timing_points
 
 
 del sys.argv[0]
@@ -205,8 +206,8 @@ del sys.argv[0]
 
 def convert(file_to_convert):
     a = Beatmap(file_to_convert)
+    a.parse()
     if a.osu_file_format_version > 5:
-        a.parse()
         a.timing_points_section = convert_timing_points(a.timing_points_section)
         a.difficulty_section = convert_diff_settings(a.difficulty_section)
         fix_max_sv(a)
