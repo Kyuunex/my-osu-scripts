@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import sys
 
 
@@ -18,7 +19,6 @@ class Beatmap:
 
     def convert_timing_points(self):
         new_timing_points = []
-        print("this works")
         base_bpm = 0
         for current_timing_point in self.timing_points_section:
             t11, t12, t13, t14, t15, t16, t17, t18 = current_timing_point
@@ -104,7 +104,7 @@ class Beatmap:
 
     def save_file(self, save_file=None):
         if save_file:
-            output_file = open(save_file, "w+")
+            output_file = open(save_file, "w")
         else:
             output_file = self.file
 
@@ -179,13 +179,23 @@ class Beatmap:
         output_file.close()
         print("File saved!")
 
+
 del sys.argv[0]
 
-a = Beatmap(" ".join(sys.argv))
-a.parse()
-a.convert_timing_points()
-a.convert_diff_settings()
-a.print_timing_points()
-a.save_file()
 
-print("saving file as "+" ".join(sys.argv))
+def convert(file_to_convert):
+    a = Beatmap(file_to_convert)
+    a.parse()
+    a.convert_timing_points()
+    a.convert_diff_settings()
+    a.save_file()
+    print("saved " + file_to_convert)
+
+
+if not sys.argv:
+    for file in os.listdir(os.getcwd()):
+        if file.endswith(".osu"):
+            convert(os.getcwd()+"/"+file)
+else:
+    convert(" ".join(sys.argv))
+
