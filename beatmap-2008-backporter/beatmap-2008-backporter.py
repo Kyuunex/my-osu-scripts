@@ -227,6 +227,7 @@ del sys.argv[0]
 
 
 def convert(file_to_convert):
+    print(file_to_convert)
     a = BeatmapBackporter(file_to_convert)
     if a.osu_file_format_version > 5:
         a.convert_timing_points()
@@ -235,9 +236,9 @@ def convert(file_to_convert):
         a.fix_nonexistant_drum_sample()
         a.osu_file_format_version = 5
         a.save_file()
-        print("saved " + file_to_convert)
+        print("saved")
     else:
-        print("skipped because already compatible " + file_to_convert)
+        print("skipped because already compatible")
 
 
 if not sys.argv:
