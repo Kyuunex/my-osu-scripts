@@ -107,6 +107,8 @@ class Beatmap:
             output_file = open(save_file, "w")
         else:
             output_file = self.file
+            output_file.seek(0)
+            output_file.truncate()
 
         output_file.write("osu file format v14")
         output_file.write("\n")
