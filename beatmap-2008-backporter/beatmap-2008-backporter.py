@@ -185,16 +185,36 @@ def convert_diff_settings(difficulty_section):
     return new_difficulty_settings
 
 
+def fix_max_sv(beatmap):
+    timing_points = []
+    slider_multiplier = float(beatmap.difficulty_section['SliderMultiplier'])
+    if slider_multiplier > 2.6:
+        slider_multiplier = slider_multiplier / 2
+        beatmap.difficulty_section['SliderMultiplier'] = str(slider_multiplier)
+
+        for current_timing_point in beatmap.timing_points_section:
+            time, beat_length, meter, sample_set, sample_index, volume, uninherited, effects = current_timing_point
+
+            timing_points.append([time, str(float(beat_length) / 2), meter, sample_set, sample_index, volume, uninherited, effects])
+
+    beatmap.timing_points_section = timing_points
+
+
 del sys.argv[0]
 
 
 def convert(file_to_convert):
     a = Beatmap(file_to_convert)
-    a.parse()
-    a.timing_points_section = convert_timing_points(a.timing_points_section)
-    a.difficulty_section = convert_diff_settings(a.difficulty_section)
-    a.save_file()
-    print("saved " + file_to_convert)
+    if a.osu_file_format_version > 5:
+        a.parse()
+        a.timing_points_section = convert_timing_points(a.timing_points_section)
+        a.difficulty_section = convert_diff_settings(a.difficulty_section)
+        fix_max_sv(a)
+        a.osu_file_format_version = 5
+        a.save_file()
+        print("saved " + file_to_convert)
+    else:
+        print("skipped because already compatible " + file_to_convert)
 
 
 if not sys.argv:
