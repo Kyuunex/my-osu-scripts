@@ -8,6 +8,7 @@ class Beatmap:
         self.file = open(file_path, "r+")
 
         # sections
+        self.osu_file_format_version = 0
         self.general_section = []
         self.editor_section = []
         self.metadata_section = []
@@ -15,49 +16,16 @@ class Beatmap:
         self.events_section = []
         self.timing_points_section = []
         self.colours_section = []
-        self.hitobjects_section = []
-
-    def convert_timing_points(self):
-        new_timing_points = []
-        base_bpm = 0
-        for current_timing_point in self.timing_points_section:
-            t11, t12, t13, t14, t15, t16, t17, t18 = current_timing_point
-            # t11, t12, t13, t14, t15, t16, t17, t18 = current_timing_point.split(",")
-
-            if t17 == "1":
-                base_bpm = float(t12)
-                new_timing_points.append([t11, t12, t13, t14, t15, t16, t17, t18])
-            elif t17 == "0":
-                nt = str(round(base_bpm * (abs(float(t12)) / 100), 3))
-                new_timing_points.append([t11, nt, t13, t14, t15, t16, "1", t18])
-
-        self.timing_points_section = new_timing_points
-
-    def convert_diff_settings(self):
-        new_difficulty_settings = {}
-        for difficulty_line in self.difficulty_section.items():
-            diff_setting = difficulty_line[0]
-
-            if diff_setting == "OverallDifficulty":
-                new_difficulty_settings["OverallDifficulty"] = str(int(float(difficulty_line[1])))
-            elif diff_setting == "ApproachRate":
-                new_difficulty_settings["OverallDifficulty"] = str(int(float(difficulty_line[1])))
-            elif diff_setting == "HPDrainRate":
-                new_difficulty_settings["HPDrainRate"] = str(int(float(difficulty_line[1])))
-            elif diff_setting == "CircleSize":
-                new_difficulty_settings["CircleSize"] = str(int(float(difficulty_line[1])))
-            elif diff_setting == "SliderMultiplier":
-                new_difficulty_settings["SliderMultiplier"] = str(float(difficulty_line[1]))
-            elif diff_setting == "SliderTickRate":
-                new_difficulty_settings["SliderTickRate"] = str(int(float(difficulty_line[1])))
-
-        self.difficulty_section = new_difficulty_settings
+        self.hit_objects_section = []
 
     def parse(self):
         current_section = ""
 
         for line in self.file.readlines():
-            if "[General]" in line:
+            if "osu file format v" in line:
+                self.osu_file_format_version = int(line.replace("osu file format v", "").strip())
+                continue
+            elif "[General]" in line:
                 current_section = "[General]"
                 continue
             elif "[Editor]" in line:
@@ -102,84 +70,119 @@ class Beatmap:
             elif current_section == "[Colours]":
                 self.colours_section.append(line)
             elif current_section == "[HitObjects]":
-                self.hitobjects_section.append(line)
-
-    def print_timing_points(self):
-        for tp in self.timing_points_section:
-            print(tp)
-        for tp in self.metadata_section:
-            print(tp)
+                self.hit_objects_section.append(line)
 
     def save_file(self, save_file=None):
+        output_buffer = f"osu file format v{str(self.osu_file_format_version)}"
+        output_buffer += "\n"
+        output_buffer += "\n"
+
+        output_buffer += "[General]"
+        output_buffer += "\n"
+        for general_line in self.general_section:
+            output_buffer += general_line
+            output_buffer += "\n"
+        output_buffer += "\n"
+
+        output_buffer += "[Editor]"
+        output_buffer += "\n"
+        for editor_line in self.editor_section:
+            output_buffer += editor_line
+            output_buffer += "\n"
+        output_buffer += "\n"
+
+        output_buffer += "[Metadata]"
+        output_buffer += "\n"
+        for metadata_line in self.metadata_section:
+            output_buffer += metadata_line
+            output_buffer += "\n"
+        output_buffer += "\n"
+
+        output_buffer += "[Difficulty]"
+        output_buffer += "\n"
+        for difficulty_line in self.difficulty_section.items():
+            output_buffer += ":".join(difficulty_line)
+            output_buffer += "\n"
+        output_buffer += "\n"
+
+        output_buffer += "[Events]"
+        output_buffer += "\n"
+        for event_line in self.events_section:
+            output_buffer += event_line
+            output_buffer += "\n"
+        output_buffer += "\n"
+
+        output_buffer += "[TimingPoints]"
+        output_buffer += "\n"
+        for timing_point_line in self.timing_points_section:
+            output_buffer += ",".join(timing_point_line)
+            output_buffer += "\n"
+        output_buffer += "\n"
+
+        if self.colours_section:
+            output_buffer += "[Colours]"
+            output_buffer += "\n"
+            for colours_line in self.colours_section:
+                output_buffer += colours_line
+                output_buffer += "\n"
+            output_buffer += "\n"
+
+        output_buffer += "[HitObjects]"
+        output_buffer += "\n"
+        for hit_objects_line in self.hit_objects_section:
+            output_buffer += hit_objects_line
+            output_buffer += "\n"
+        output_buffer += "\n"
+
         if save_file:
             output_file = open(save_file, "w")
+            output_file.write(output_buffer)
+            output_file.close()
         else:
-            output_file = self.file
-            output_file.seek(0)
-            output_file.truncate()
-
-        output_file.write("osu file format v14")
-        output_file.write("\n")
-        output_file.write("\n")
-
-        output_file.write("[General]")
-        output_file.write("\n")
-        for general_line in self.general_section:
-            output_file.write(general_line)
-            output_file.write("\n")
-        output_file.write("\n")
-
-        output_file.write("[Editor]")
-        output_file.write("\n")
-        for editor_line in self.editor_section:
-            output_file.write(editor_line)
-            output_file.write("\n")
-        output_file.write("\n")
-
-        output_file.write("[Metadata]")
-        output_file.write("\n")
-        for metadata_line in self.metadata_section:
-            output_file.write(metadata_line)
-            output_file.write("\n")
-        output_file.write("\n")
-
-        output_file.write("[Difficulty]")
-        output_file.write("\n")
-        for difficulty_line in self.difficulty_section.items():
-            output_file.write(":".join(difficulty_line))
-            output_file.write("\n")
-        output_file.write("\n")
-
-        output_file.write("[Events]")
-        output_file.write("\n")
-        for event_line in self.events_section:
-            output_file.write(event_line)
-            output_file.write("\n")
-        output_file.write("\n")
-
-        output_file.write("[TimingPoints]")
-        output_file.write("\n")
-        for timing_point_line in self.timing_points_section:
-            output_file.write(",".join(timing_point_line))
-            output_file.write("\n")
-        output_file.write("\n")
-
-        output_file.write("[Colours]")
-        output_file.write("\n")
-        for colours_line in self.colours_section:
-            output_file.write(colours_line)
-            output_file.write("\n")
-        output_file.write("\n")
-
-        output_file.write("[HitObjects]")
-        output_file.write("\n")
-        for hitobjects_line in self.hitobjects_section:
-            output_file.write(hitobjects_line)
-            output_file.write("\n")
-        output_file.write("\n")
-
-        output_file.close()
+            self.file.seek(0)
+            self.file.write(output_buffer)
+            self.file.truncate()
+            self.file.close()
         print("File saved!")
+
+
+def convert_timing_points(timing_points_section):
+    timing_points = []
+    base_beat_length = 0
+    for current_timing_point in timing_points_section:
+        time, beat_length, meter, sample_set, sample_index, volume, uninherited, effects = current_timing_point
+
+        if uninherited == "1":
+            # red line
+            base_beat_length = float(beat_length)
+            timing_points.append([time, beat_length, meter, sample_set, sample_index, volume, "1", effects])
+        elif uninherited == "0":
+            # green line
+            new_beat_length = round(base_beat_length * abs(float(beat_length)) / 100, 12)
+            timing_points.append([time, str(new_beat_length), meter, sample_set, sample_index, volume, "1", effects])
+
+    return timing_points
+
+
+def convert_diff_settings(difficulty_section):
+    new_difficulty_settings = {}
+    for difficulty_line in difficulty_section.items():
+        diff_setting = difficulty_line[0]
+
+        if diff_setting == "OverallDifficulty":
+            new_difficulty_settings["OverallDifficulty"] = str(int(float(difficulty_line[1])))
+        elif diff_setting == "ApproachRate":
+            new_difficulty_settings["OverallDifficulty"] = str(int(float(difficulty_line[1])))
+        elif diff_setting == "HPDrainRate":
+            new_difficulty_settings["HPDrainRate"] = str(int(float(difficulty_line[1])))
+        elif diff_setting == "CircleSize":
+            new_difficulty_settings["CircleSize"] = str(int(float(difficulty_line[1])))
+        elif diff_setting == "SliderMultiplier":
+            new_difficulty_settings["SliderMultiplier"] = str(float(difficulty_line[1]))
+        elif diff_setting == "SliderTickRate":
+            new_difficulty_settings["SliderTickRate"] = str(int(float(difficulty_line[1])))
+
+    return new_difficulty_settings
 
 
 del sys.argv[0]
@@ -188,8 +191,8 @@ del sys.argv[0]
 def convert(file_to_convert):
     a = Beatmap(file_to_convert)
     a.parse()
-    a.convert_timing_points()
-    a.convert_diff_settings()
+    a.timing_points_section = convert_timing_points(a.timing_points_section)
+    a.difficulty_section = convert_diff_settings(a.difficulty_section)
     a.save_file()
     print("saved " + file_to_convert)
 
