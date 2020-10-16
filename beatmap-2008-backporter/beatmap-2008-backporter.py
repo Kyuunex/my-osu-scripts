@@ -25,7 +25,8 @@ class Beatmap:
 
         for line in self.file.readlines():
             if "osu file format v" in line:
-                self.osu_file_format_version = int(line.replace("osu file format v", "").replace("\ufeff", "").strip())
+                self.osu_file_format_version = int(line.replace("osu file format v", "")
+                                                   .replace("\ufeff", "").replace("\x7f", "").strip())
                 continue
             elif "[General]" in line:
                 current_section = "[General]"
