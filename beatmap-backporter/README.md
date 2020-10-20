@@ -27,4 +27,6 @@ open cmd, and type
 python C:/beatmapbackporter.py C:/osu/Songs/1224803 Rita - Destination/
 ```  
 this assumes you put the script literally in `C:/`  
+(make sure there are no spaces in path where you put the script itself 
+if you are not running it from the folder it is in)  
 this will convert and override all .osu files that are in that mapset folder
