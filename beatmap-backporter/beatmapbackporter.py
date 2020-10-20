@@ -257,5 +257,9 @@ if __name__ == '__main__':
         for file in os.listdir(os.getcwd()):
             if file.endswith(".osu"):
                 convert(os.getcwd() + "/" + file)
-    else:
+    elif (" ".join(sys.argv)).endswith('.osu'):
         convert(" ".join(sys.argv))
+    else:
+        for file in os.listdir(" ".join(sys.argv)):
+            if file.endswith(".osu"):
+                convert(" ".join(sys.argv) + "/" + file)
