@@ -22,7 +22,7 @@ all conversions overwrite the current .osu files
 
 you need python installed and in PATH  
 
-open cmd, and type and type  
+open cmd, and type  
 ```
 python C:/beatmapbackporter.py C:/osu/Songs/1224803 Rita - Destination/
 ```  
