@@ -13,7 +13,7 @@ timing_points = input_file.readlines()
 base_bpm = 0
 
 for current_timing_point in timing_points:
-    t11, t12, t13, t14, t15, t16, t17, t18 = current_timing_point.split(",")
+    t11, t12, t13, t14, t15, t16, t17, t18 = current_timing_point.strip().split(",")
 
     if t17 == "1":
         base_bpm = float(t12)
