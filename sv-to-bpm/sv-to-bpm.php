@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 error_reporting(0);
 
