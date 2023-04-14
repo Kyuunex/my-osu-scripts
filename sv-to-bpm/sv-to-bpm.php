@@ -1,11 +1,13 @@
 <?php
 error_reporting(0);
 
-$input_file = fopen("input.txt", "r") or die("Unable to open the input file!");
-$input_contents = fread($input_file, filesize("input.txt"));
-fclose($input_file);
+if (count($argv) != 2) {
+    die("Pass in the location to a file containing your timing points as your only argument\n");
+}
 
-$output_file = fopen("output.txt", "w") or die("Unable to open output file!");
+$input_file = fopen($argv[1], "r") or die("Unable to open the input file!");
+$input_contents = fread($input_file, filesize($argv[1]));
+fclose($input_file);
 
 
 $timing_points = explode("\n", $input_contents);
@@ -20,12 +22,12 @@ for ($i = 0; $i < $line_amount; $i++) {
 	
 	if($t17 == "1"){
 		$base_bpm = $t12;
-		fwrite($output_file, ($t11 . "," . $t12 . "," . $t13 . "," . $t14 . "," . $t15 . "," . $t16 . "," . $t17 . "," . $t18 . "\n"));
+		echo ($t11 . "," . $t12 . "," . $t13 . "," . $t14 . "," . $t15 . "," . $t16 . "," . $t17 . "," . $t18 . "\n");
 	} elseif($t17 == "0"){
 		$nt = $base_bpm * (abs($t12)/100);
-		fwrite($output_file, ($t11 . "," . $nt . "," . $t13 . "," . $t14 . "," . $t15 . "," . $t16 . "," . "1" . "," . $t18 . "\n"));
+		echo ($t11 . "," . $nt . "," . $t13 . "," . $t14 . "," . $t15 . "," . $t16 . "," . "1" . "," . $t18 . "\n");
 	}
 }
 
 fclose($output_file);
-echo "This is done. look for output.txt file\n";
+echo "# This is done.\n";
