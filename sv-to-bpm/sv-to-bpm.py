@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 
-input_file = open("input.txt", "r+")
+import sys
 
-output_file = open("output.txt", "w")
+if not len(sys.argv) == 2:
+    print("Pass in the location to a file containing your timing points as your only argument")
+    exit()
+
+input_file = open(sys.argv[1], "r")
 
 timing_points = input_file.readlines()
 
@@ -13,11 +17,9 @@ for current_timing_point in timing_points:
 
     if t17 == "1":
         base_bpm = float(t12)
-        output_file.write(f"{t11},{t12},{t13},{t14},{t15},{t16},{t17},{t18}")
+        print(f"{t11},{t12},{t13},{t14},{t15},{t16},{t17},{t18}")
     elif t17 == "0":
         nt = str(round(base_bpm * (abs(float(t12))/100), 3))
-        output_file.write(f"{t11},{nt},{t13},{t14},{t15},{t16},1,{t18}")
+        print(f"{t11},{nt},{t13},{t14},{t15},{t16},1,{t18}")
 
-output_file.close()
-
-print("This is done. look for output.txt file")
+print("# This is done")
